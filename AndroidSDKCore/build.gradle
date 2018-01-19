@@ -68,18 +68,18 @@ publishing {
 
             // The publication doesn't know about our dependencies,
             // so we have to manually add them to the pom.
-            pomCreation(libraryGroupId,libraryVersion,pom)
+            pomCreation(libraryGroupId, libraryVersion, pom)
         }
         jar(MavenPublication) {
             groupId libraryGroupId
             version libraryVersion
-            artifactId 'leanplum-core'
+            artifactId 'Leanplum-core'
 
             artifact("$buildDir/outputs/jar/AndroidSDKCore-release.jar")
 
             // The publication doesn't know about our dependencies,
             // so we have to manually add them to the pom.
-            pomCreation(libraryGroupId,libraryVersion,pom)
+            pomCreation(libraryGroupId, libraryVersion, pom)
         }
     }
 }
