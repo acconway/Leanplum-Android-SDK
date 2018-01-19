@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.jfrog.artifactory'
 apply plugin: 'maven-publish'
+apply from: "../common-methods.gradle"
 
 def COMPILE_SDK_VERSION=27
 def BUILD_TOOLS_VERSION='27.0.2'
@@ -23,10 +24,8 @@ android {
 }
 
 dependencies {
-    debugApi project(':AndroidSDKCore')
-    releaseApi project(':AndroidSDKCore')
-    debugApi project(':AndroidSDKPush')
-    releaseApi project(':AndroidSDKPush')
+    api project(':AndroidSDKCore')
+    api project(':AndroidSDKPush')
 
     // Provided dependencies are optional dependencies and will not show up in pom file.
     compileOnly('com.google.firebase:firebase-messaging:[10.0.0,)') {
@@ -63,28 +62,7 @@ publishing {
 
             // The publication doesn't know about our dependencies,
             // so we have to manually add them to the pom.
-            pom.withXml {
-                def dependenciesNode = asNode().appendNode('dependencies')
-
-                // Iterate over the compile dependencies (we don't want the test ones),
-                // adding a <dependency> node for each.
-                configurations.api.allDependencies.each {
-                    if (it.group != null && it.name != null) {
-                        def dependencyNode = dependenciesNode.appendNode('dependency')
-                        dependencyNode.appendNode('groupId', it.group)
-                        dependencyNode.appendNode('artifactId', it.name)
-                        dependencyNode.appendNode('version', it.version)
-                    }
-                }
-                configurations.releaseApi.allDependencies.each {
-                    if (it.group != null && it.name != null) {
-                        def dependencyNode = dependenciesNode.appendNode('dependency')
-                        dependencyNode.appendNode('groupId', it.group)
-                        dependencyNode.appendNode('artifactId', it.name)
-                        dependencyNode.appendNode('version', it.version)
-                    }
-                }
-            }
+            pomCreation(libraryGroupId,libraryVersion,pom)
         }
         jar(MavenPublication) {
             groupId libraryGroupId
@@ -95,29 +73,7 @@ publishing {
 
             // The publication doesn't know about our dependencies,
             // so we have to manually add them to the pom.
-            pom.withXml {
-                asNode().appendNode('packaging', 'aar') // Default to aar packaging.
-                def dependenciesNode = asNode().appendNode('dependencies')
-
-                // Iterate over the compile dependencies (we don't want the test ones),
-                // adding a <dependency> node for each.
-                configurations.api.allDependencies.each {
-                    if (it.group != null && it.name != null) {
-                        def dependencyNode = dependenciesNode.appendNode('dependency')
-                        dependencyNode.appendNode('groupId', it.group)
-                        dependencyNode.appendNode('artifactId', it.name)
-                        dependencyNode.appendNode('version', it.version)
-                    }
-                }
-                configurations.releaseApi.allDependencies.each {
-                    if (it.group != null && it.name != null) {
-                        def dependencyNode = dependenciesNode.appendNode('dependency')
-                        dependencyNode.appendNode('groupId', it.group)
-                        dependencyNode.appendNode('artifactId', it.name)
-                        dependencyNode.appendNode('version', it.version)
-                    }
-                }
-            }
+            pomCreation(libraryGroupId,libraryVersion,pom)
         }
     }
 }
